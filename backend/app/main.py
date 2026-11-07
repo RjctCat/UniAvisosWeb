@@ -1,15 +1,28 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.config.database import Base, engine, get_db
-from app import models  # registra las tablas
+from app import models
+from app.routers import auth, categorias, usuarios, anuncios
 
-# Crea las tablas en Supabase si no existen
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="UniAvisos API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+app.include_router(auth.router)
+app.include_router(categorias.router)
+app.include_router(usuarios.router)
+app.include_router(anuncios.router)
 
 @app.get("/")
 def inicio():
