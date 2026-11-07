@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.config.database import Base, engine, get_db
 from app import models
-from app.routers import auth, categorias, usuarios, anuncios
+from app.routers import auth, categorias, usuarios, anuncios, archivos
 
 Base.metadata.create_all(bind=engine)
 
@@ -23,6 +23,7 @@ app.include_router(auth.router)
 app.include_router(categorias.router)
 app.include_router(usuarios.router)
 app.include_router(anuncios.router)
+app.include_router(archivos.router)
 
 @app.get("/")
 def inicio():
