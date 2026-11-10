@@ -1,0 +1,28 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="c7-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="c7-main" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="c7-card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="c7-badge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect x="5" y="5" width="90" height="90" rx="24" fill="url(#c7-bg)" stroke="#1e293b" stroke-width="2"/>
+  <path d="M22 22V54C22 69.5 34.5 82 50 82S78 69.5 78 54V22H66V54C66 62.8 58.8 70 50 70S34 62.8 34 54V22H22Z" fill="url(#c7-main)"/>
+  <path d="M50 18L72 74H60.5L50 48L39.5 74H28L50 18Z" fill="url(#c7-main)"/>
+  <rect x="33" y="44" width="34" height="15" rx="4" fill="url(#c7-card)" stroke="url(#c7-main)" stroke-width="2"/>
+  <line x1="38" y1="49" x2="55" y2="49" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="38" y1="54" x2="49" y2="54" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="67" cy="44" r="5" fill="url(#c7-badge)"/>
+  <circle cx="67" cy="44" r="2" fill="#ffffff"/>
+</svg>
