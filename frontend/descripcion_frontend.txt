@@ -1,0 +1,57 @@
+FRONTEND DE UNIAVISOS
+
+Este frontend está desarrollado en React con Vite y funciona como la interfaz principal de la aplicación UniAvisos. Su objetivo es ofrecer una experiencia visual clara, moderna y ordenada para que la comunidad universitaria pueda consultar, publicar y administrar avisos institucionales de manera fácil y rápida.
+
+Herramientas utilizadas hasta ahora:
+- GitHub Copilot: se utilizó como asistente de programación para apoyar el desarrollo y la revisión del código del frontend. Se empleó en lugar de Devin debido a las limitaciones de tokens.
+- React: se utilizó para construir la interfaz mediante componentes reutilizables, como las páginas de inicio, lista, tablero y vista 3D, además de los modales y controles de autenticación.
+- Vite: se utiliza para ejecutar el entorno de desarrollo y preparar la compilación del frontend. Por ejemplo, permite iniciar la aplicación localmente y generar la versión de producción.
+- Tailwind CSS: se utiliza para aplicar estilos mediante clases de utilidad en los componentes. Por ejemplo, en la vista 3D se usa para organizar los controles y definir espaciados, colores, bordes y adaptación a distintos tamaños de pantalla.
+- Three.js: se utiliza en la galería 3D para crear la representación tridimensional del tablón universitario y sus avisos. La escena permite visualizar tarjetas en el espacio, acercar la vista y recorrer las páginas de anuncios.
+
+Herramientas de la consigna pendientes de uso o de documentar:
+- Devin: agente de inteligencia artificial orientado a apoyar tareas de desarrollo de software, como analizar un proyecto y colaborar en cambios de código. No se utilizó en UniAvisos; se eligió GitHub Copilot en su lugar debido a la limitación de tokens. Por eso, no se atribuyen a Devin cambios ni resultados del proyecto.
+- Astra con ChatGPT: herramienta o combinación indicada en la consigna cuyo uso concreto en UniAvisos queda pendiente. Cuando se utilice, se documentará qué servicio de Astra se empleó, cómo se complementó con ChatGPT y qué tarea específica apoyó; todavía no se atribuyen resultados a esta herramienta.
+- Comentera: herramienta mencionada para la que queda pendiente registrar el uso específico en el proyecto. Si se incorpora para recibir o gestionar comentarios, se describirá quién los proporciona, cómo se revisan y qué mejoras de UniAvisos se derivan de ellos.
+- Slack: plataforma de comunicación y colaboración que podría utilizarse para coordinar al equipo, compartir avances y organizar conversaciones del proyecto. Su uso en UniAvisos y los ejemplos concretos de coordinación se documentarán cuando se realicen.
+- Vercel: plataforma de despliegue web que podría utilizarse para publicar el frontend y compartir una versión accesible en línea. Cuando se despliegue el proyecto, se indicará cómo se configuró la publicación y qué URL o resultado se obtuvo.
+
+Estas descripciones explican el propósito general o el uso previsto de las herramientas pendientes; no significan que ya se hayan utilizado en el desarrollo de UniAvisos. Se actualizarán con ejemplos reales cuando formen parte del trabajo.
+
+Qué hace:
+- Muestra una página de inicio con diseño atractivo, anuncios destacados y una navegación rápida hacia las secciones principales.
+- Tiene una vista de lista bien organizada, con búsqueda por texto, facultad o carrera y filtros por categoría e importancia.
+- Tiene un tablero visual donde los avisos se presentan como notas o tarjetas distribuidas de manera ordenada según su contenido, categoría y facultad.
+- Incluye una galería 3D de anuncios, integrada con la autenticación, publicación, edición y eliminación existentes.
+- La vista 3D recrea un tablón universitario con identidad azul de UniAvisos; adapta la proporción de las tarjetas al tipo de anuncio y a sus imágenes, muestra una previsualización legible al pasar el cursor y permite paginar y acercar.
+- Recuerda en el navegador la vista preferida (tablero, lista o 3D) y la usa como destino principal desde la portada.
+- Permite iniciar sesión para distintos perfiles: visitante, publicador y administrador.
+- Permite a los usuarios con permisos publicar, editar y eliminar avisos, además de gestionar categorías y usuarios; el administrador puede crear, editar y eliminar categorías y cuentas, y asignar roles.
+- Cada usuario puede consultar y actualizar su perfil básico y cambiar su contraseña confirmando la contraseña actual; el perfil muestra opciones adecuadas para estudiante, publicador y administrador.
+- Incluye opciones de gestión para creadores y administradores, como revisar sus publicaciones, modificar contenido y eliminar avisos cuando sea necesario.
+- Mantiene una identidad visual consistente en todas las pantallas, con estilos armonizados para la landing page, la vista lista y el tablero.
+- Usa animaciones estacionales y un toggle de tema claro/oscuro; los modales y las vistas previas de imágenes se adaptan al tema y conservan la proporción del contenido.
+- Consume la API del backend para obtener anuncios, categorías, perfil del usuario y otras funciones relacionadas con la publicación.
+
+Pantalla de lista:
+- La vista de lista usa filtros compactos, tarjetas de anuncios más concisas y un control de tema claro/oscuro compartido con el tablero.
+- El buscador encuentra coincidencias en el título, resumen, contenido, facultad y carrera; los filtros rápidos se reservan para categoría e importancia.
+- La pantalla incluye mensajes de carga y estados vacíos para que el usuario entienda si hay resultados o si deben cambiar los filtros.
+- Además, esta sección está alineada con el estilo general de la aplicación, manteniendo una estructura visual uniforme, botones claros y una estética moderna y profesional.
+
+Funciones para creadores y administradores:
+- Los usuarios con permisos pueden gestionar sus propios anuncios desde la interfaz.
+- En la lista, la opción “Mis anuncios” muestra las publicaciones propias para editarlas o eliminarlas; se puede volver a la lista completa en cualquier momento.
+- Los roles de publicador y administrador permiten una control más completo del sistema, desde la publicación hasta la moderación y administración del contenido general.
+
+Estructura principal:
+- src/main.jsx: configura la aplicación, las rutas y el proveedor de autenticación.
+- src/pages/Inicio.jsx: landing page con anuncios destacados y presentación general.
+- src/pages/Lista.jsx: vista con búsqueda avanzada y filtros organizados.
+- src/pages/Tablero.jsx: tablero visual con avisos y gestión de contenido.
+- src/pages/Vista3D.jsx: galería 3D integrada con la API y las herramientas comunes de gestión.
+- src/context/AuthContext.jsx: maneja la sesión, permisos y autenticación del usuario.
+- src/components/: contiene modales, tarjetas, filtros, paneles de administración y acciones de usuario.
+- src/styles/: estilos específicos de cada vista, incluyendo landing, lista y tablero.
+
+En resumen, el frontend de UniAvisos es la capa visual de la aplicación: presenta la información de manera clara, facilita la búsqueda y la gestión de anuncios, y conecta al usuario con todas las funcionalidades del backend desde una interfaz moderna y bien organizada.
