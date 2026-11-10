@@ -32,7 +32,7 @@ def verificar_propiedad(anuncio: Anuncio, usuario: Usuario):
 
 @router.get("", response_model=list[AnuncioOut])
 def listar(
-    q: str | None = Query(None, description="Buscar por título"),
+    q: str | None = Query(None, description="Buscar por título, contenido, facultad o carrera"),
     categoria_id: UUID | None = None,
     facultad: str | None = None,
     carrera: str | None = None,
@@ -45,7 +45,16 @@ def listar(
     consulta = db.query(Anuncio).options(joinedload(Anuncio.categoria))
 
     if q:
-        consulta = consulta.filter(Anuncio.titulo.ilike(f"%{q}%"))
+        termino = f"%{q}%"
+        consulta = consulta.filter(
+            or_(
+                Anuncio.titulo.ilike(termino),
+                Anuncio.resumen.ilike(termino),
+                Anuncio.contenido.ilike(termino),
+                Anuncio.facultad.ilike(termino),
+                Anuncio.carrera.ilike(termino),
+            )
+        )
     if categoria_id:
         consulta = consulta.filter(Anuncio.categoria_id == categoria_id)
     if facultad:

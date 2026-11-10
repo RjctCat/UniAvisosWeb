@@ -12,14 +12,29 @@ class UsuarioCreate(BaseModel):
     carrera: str | None = None
 
 
+class UsuarioAdminCreate(UsuarioCreate):
+    rol: Literal["estudiante", "publicador", "administrador"] = "estudiante"
+
+
 class UsuarioUpdate(BaseModel):
     nombre: str | None = Field(default=None, min_length=2, max_length=150)
+    correo: EmailStr | None = None
     facultad: str | None = None
     carrera: str | None = None
 
 
+class UsuarioAdminUpdate(UsuarioUpdate):
+    password: str | None = Field(default=None, min_length=8, max_length=72)
+    rol: Literal["estudiante", "publicador", "administrador"] = "estudiante"
+
+
 class RolUpdate(BaseModel):
     rol: Literal["estudiante", "publicador", "administrador"]
+
+
+class CambiarPassword(BaseModel):
+    password_actual: str = Field(min_length=1, max_length=72)
+    password_nueva: str = Field(min_length=8, max_length=72)
 
 
 class UsuarioOut(BaseModel):
