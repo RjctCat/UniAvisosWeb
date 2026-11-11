@@ -1,0 +1,207 @@
+.vista3d-header-inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.vista3d-brand {
+  width: max-content;
+}
+
+.vista3d-header-controls {
+  display: grid;
+  min-width: 0;
+  gap: 0.55rem;
+}
+
+.vista3d-season-controls,
+.vista3d-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.vista3d-season-badge,
+.vista3d-header-button {
+  display: inline-flex;
+  min-height: 2.4rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 8%);
+  padding: 0.45rem 0.7rem;
+  color: #eff6ff;
+  font-size: 0.72rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.vista3d-header-button {
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.vista3d-header-button:hover {
+  border-color: rgb(191 219 254 / 65%);
+  background: rgb(59 130 246 / 28%);
+}
+
+.vista3d-filters {
+  display: flex;
+  min-width: 0;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.vista3d-search {
+  width: 10rem;
+}
+
+.vista3d-category {
+  width: 12rem;
+}
+
+.vista3d-importance {
+  width: 9rem;
+}
+
+.vista3d-navigation > a,
+.vista3d-navigation > button,
+.vista3d-navigation > div > button {
+  min-height: 2.4rem;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.vista3d-publish {
+  background: linear-gradient(110deg, #1769d2, #1056b0);
+}
+
+@media (max-width: 900px) {
+  .vista3d-header-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+    padding: 0.75rem;
+  }
+
+  .vista3d-header-controls {
+    gap: 0.6rem;
+  }
+
+  .vista3d-season-controls,
+  .vista3d-filters,
+  .vista3d-navigation {
+    justify-content: flex-start;
+  }
+
+  .vista3d-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vista3d-search {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .vista3d-category,
+  .vista3d-importance {
+    width: 100%;
+  }
+
+  .vista3d-navigation {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .vista3d-header {
+    padding: 0.5rem 0.55rem 0;
+  }
+
+  .vista3d-header-inner {
+    gap: 0.55rem;
+    border-radius: 1rem;
+    padding: 0.65rem;
+  }
+
+  .vista3d-brand {
+    gap: 0.5rem;
+  }
+
+  .vista3d-brand img {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .vista3d-brand > span:first-of-type {
+    font-size: 1rem;
+  }
+
+  .vista3d-brand > span:last-of-type {
+    padding: 0.3rem 0.45rem;
+    font-size: 0.65rem;
+  }
+
+  .vista3d-season-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0.35rem;
+  }
+
+  .vista3d-season-badge {
+    min-width: 0;
+    justify-content: flex-start;
+    overflow: hidden;
+    padding-inline: 0.55rem;
+    text-overflow: ellipsis;
+  }
+
+  .vista3d-header-button {
+    min-height: 2.35rem;
+    padding: 0.4rem 0.55rem;
+  }
+
+  .vista3d-button-label {
+    display: none;
+  }
+
+  .vista3d-filters {
+    gap: 0.4rem;
+  }
+
+  .vista3d-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .vista3d-navigation > a,
+  .vista3d-navigation > button,
+  .vista3d-navigation > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .vista3d-navigation > a,
+  .vista3d-navigation > button,
+  .vista3d-navigation > div > button {
+    overflow: hidden;
+    padding-inline: 0.45rem;
+    text-overflow: ellipsis;
+  }
+
+  .vista3d-navigation > div {
+    justify-content: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vista3d-header-button {
+    transition: none;
+  }
+}

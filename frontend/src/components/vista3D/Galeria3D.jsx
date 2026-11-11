@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { dibujarTarjeta, TARJETA_ANCHO } from "./dibujarTarjeta";
+import { COLORES_TEMPORADA, SIMBOLOS_TEMPORADA } from "../../lib/temporada";
 
 const POR_PAGINA = 6;
 const TABLON_ANCHO = 15;
@@ -249,6 +250,101 @@ function CameraRig({ zoom, foco }) {
   return null;
 }
 
+function colorTemporada(temporada, celebracion) {
+  const rgb = celebracion?.color?.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (rgb) return new THREE.Color(`rgb(${rgb[1]}, ${rgb[2]}, ${rgb[3]})`);
+
+  const temporadaColor = COLORES_TEMPORADA[temporada];
+  const rgbTemporada = temporadaColor?.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  return rgbTemporada
+    ? new THREE.Color(`rgb(${rgbTemporada[1]}, ${rgbTemporada[2]}, ${rgbTemporada[3]})`)
+    : new THREE.Color("#bfdbfe");
+}
+
+function ParticulaEstacional({ datos, textura, color, animada }) {
+  const referencia = useRef(null);
+
+  useFrame((_, delta) => {
+    const particula = referencia.current;
+    if (!particula || !animada) return;
+    particula.position.y -= datos.velocidad * delta;
+    if (particula.position.y < -3.2) particula.position.y = 3.2;
+    particula.rotation.z += datos.giro * delta;
+  });
+
+  return (
+    <mesh
+      ref={referencia}
+      position={[datos.x, datos.y, -0.08]}
+      scale={datos.tamano}
+      rotation={[0, 0, datos.rotacion]}
+    >
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial
+        map={textura}
+        color={color}
+        transparent
+        opacity={0.68}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  );
+}
+
+function ParticulasTemporada({ temporada, celebracion, animada }) {
+  const simbolo = celebracion?.simbolo || SIMBOLOS_TEMPORADA[temporada] || "✦";
+  const textura = useMemo(() => {
+    const lienzo = document.createElement("canvas");
+    lienzo.width = 128;
+    lienzo.height = 128;
+    const contexto = lienzo.getContext("2d");
+    if (contexto) {
+      contexto.font = "96px serif";
+      contexto.textAlign = "center";
+      contexto.textBaseline = "middle";
+      contexto.fillStyle = "#ffffff";
+      contexto.fillText(simbolo, 64, 68);
+    }
+    const mapa = new THREE.CanvasTexture(lienzo);
+    mapa.colorSpace = THREE.SRGBColorSpace;
+    return mapa;
+  }, [simbolo]);
+  const color = useMemo(
+    () => colorTemporada(temporada, celebracion),
+    [temporada, celebracion]
+  );
+  const particulas = useMemo(
+    () =>
+      Array.from({ length: 18 }, (_, indice) => ({
+        id: indice,
+        x: -6.2 + ((indice * 37) % 124) / 10,
+        y: -3 + ((indice * 53) % 60) / 10,
+        tamano: 0.13 + (indice % 4) * 0.045,
+        velocidad: 0.14 + (indice % 5) * 0.045,
+        giro: ((indice % 3) - 1) * 0.08,
+        rotacion: (indice % 5) * 0.55,
+      })),
+    []
+  );
+
+  useEffect(() => () => textura.dispose(), [textura]);
+
+  return (
+    <group>
+      {particulas.map((datos) => (
+        <ParticulaEstacional
+          key={datos.id}
+          datos={datos}
+          textura={textura}
+          color={color}
+          animada={animada}
+        />
+      ))}
+    </group>
+  );
+}
+
 function useTextura(anuncio, aspecto, onAspectoCarga) {
   const lienzo = useMemo(() => {
     const canvas = document.createElement("canvas");
@@ -319,7 +415,6 @@ function Tarjeta({
   activa,
   reducirMovimiento,
   onAbrir,
-  onPrevisualizar,
   onAspectoCarga,
 }) {
   const grupo = useRef(null);
@@ -374,11 +469,9 @@ function Tarjeta({
       onPointerOver={(evento) => {
         evento.stopPropagation();
         setEncima(true);
-        onPrevisualizar({ anuncio, posicion });
       }}
       onPointerOut={() => {
         setEncima(false);
-        onPrevisualizar(null);
       }}
     >
         <mesh position={[0.06, -0.07, 0.051]}>
@@ -408,12 +501,19 @@ function Tarjeta({
     );
 }
 
-export default function Galeria3D({ anuncios, onAbrir, anuncioSeleccionado, tema = "light" }) {
+export default function Galeria3D({
+  anuncios,
+  onAbrir,
+  anuncioSeleccionado,
+  tema = "light",
+  temporada,
+  celebracion,
+  animacionTemporada = true,
+}) {
     const [pagina, setPagina] = useState(0);
     const [indiceActivo, setIndiceActivo] = useState(0);
     const [zoom, setZoom] = useState(1);
     const [focoLocal, setFocoLocal] = useState(null);
-    const [avisoEncima, setAvisoEncima] = useState(null);
     const [aspectosImagen, setAspectosImagen] = useState({});
     const temporizador = useRef(null);
     const totalPaginas = Math.max(1, Math.ceil(anuncios.length / POR_PAGINA));
@@ -563,6 +663,11 @@ export default function Galeria3D({ anuncios, onAbrir, anuncioSeleccionado, tema
         <directionalLight position={[6, 2, 5]} intensity={0.65} color="#bfdbfe" />
         <TablonUniversitario tema={tema} />
         <CameraRig zoom={zoom} foco={foco} />
+        <ParticulasTemporada
+          temporada={temporada}
+          celebracion={celebracion}
+          animada={animacionTemporada && !reducirMovimiento}
+        />
 
         {visibles.map((anuncio, indice) => (
           <Tarjeta
@@ -575,57 +680,10 @@ export default function Galeria3D({ anuncios, onAbrir, anuncioSeleccionado, tema
             activa={indice === indiceActivo}
             reducirMovimiento={reducirMovimiento}
             onAspectoCarga={alCargarAspecto}
-            onPrevisualizar={setAvisoEncima}
             onAbrir={(anuncio, posicion) => alAbrirTarjeta(anuncio, posicion, indice)}
           />
         ))}
       </Canvas>
-
-      {avisoEncima && (
-        <aside
-          aria-live="polite"
-          className={`pointer-events-none absolute bottom-28 left-3 z-10 w-[min(27rem,calc(100%-1.5rem))] rounded-2xl border p-4 shadow-2xl shadow-blue-950/25 backdrop-blur-xl sm:bottom-28 sm:left-6 ${
-            tema === "dark"
-              ? "border-blue-200/20 bg-[#17263b]/95 text-slate-100"
-              : "border-white/60 bg-white/95 text-[#10233f]"
-          }`}
-        >
-          <div className="min-w-0">
-            <div className="mb-2 flex flex-wrap gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <span className={`rounded-full px-2 py-1 ${
-                tema === "dark" ? "bg-blue-950 text-blue-200" : "bg-blue-100 text-blue-800"
-              }`}>
-                {avisoEncima.anuncio.categoria?.nombre || "General"}
-              </span>
-              <span className={`rounded-full px-2 py-1 ${
-                tema === "dark" ? "bg-slate-700 text-slate-200" : "bg-slate-100 text-slate-700"
-              }`}>
-                {avisoEncima.anuncio.importancia || "normal"}
-              </span>
-            </div>
-            <h2 className="break-words text-base font-extrabold leading-snug sm:text-lg">
-              {avisoEncima.anuncio.titulo}
-            </h2>
-            {(avisoEncima.anuncio.resumen || avisoEncima.anuncio.contenido) && (
-              <p className={`mt-1 line-clamp-4 break-words text-sm leading-relaxed ${
-                tema === "dark" ? "text-slate-300" : "text-slate-600"
-              }`}>
-                {avisoEncima.anuncio.resumen}
-                {avisoEncima.anuncio.resumen &&
-                  avisoEncima.anuncio.contenido !== avisoEncima.anuncio.resumen &&
-                  avisoEncima.anuncio.tipo !== "image" &&
-                  ` ${avisoEncima.anuncio.contenido || ""}`}
-                {!avisoEncima.anuncio.resumen && avisoEncima.anuncio.contenido}
-              </p>
-            )}
-            <p className={`mt-2 text-[10px] font-semibold ${
-              tema === "dark" ? "text-blue-300" : "text-blue-700"
-            }`}>
-              Selecciona para abrir el anuncio completo
-            </p>
-          </div>
-        </aside>
-      )}
 
       <p className="sr-only" aria-live="polite">
         {anuncios.length

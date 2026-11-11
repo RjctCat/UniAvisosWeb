@@ -7,8 +7,11 @@ import ConfirmarEliminacion from "../components/auth/ConfirmarEliminacion";
 import PublicarModal from "../components/auth/PublicarModal";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
+import useTemporada from "../hooks/useTemporada";
 import useVistaPreferida from "../hooks/useVistaPreferida";
 import { api } from "../lib/api";
+import { ETIQUETAS_TEMPORADA } from "../lib/temporada";
+import "../styles/vista3d.css";
 
 function hayWebGL() {
   try {
@@ -28,8 +31,10 @@ export default function Vista3D() {
   const [parametros] = useSearchParams();
   const { usuario, puedePublicar, esAdministrador } = useAuth();
   const { tema, alternar } = useTheme();
+  const { temporada, celebracion, siguiente } = useTemporada();
   useVistaPreferida();
   const [soportado] = useState(hayWebGL);
+  const [animacionTemporada, setAnimacionTemporada] = useState(true);
 
   const [anuncios, setAnuncios] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -121,77 +126,108 @@ export default function Vista3D() {
     : error || (visibles.length === 0 ? "No hay anuncios que coincidan." : "");
 
   return (
-    <div className={`relative h-screen overflow-hidden text-white ${
+    <div className={`relative h-dvh overflow-hidden text-white ${
       tema === "dark" ? "bg-[#0b1524]" : "bg-[#dcecff]"
     }`}>
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 px-3 pt-3 md:px-6">
-        <div className="pointer-events-auto mx-auto flex max-w-[1600px] flex-wrap items-center gap-3 rounded-2xl border border-white/20 bg-[#102c4d]/90 px-4 py-3 shadow-2xl shadow-blue-950/25 backdrop-blur-xl">
-          <Link to="/" className="flex items-center gap-3" aria-label="UniAvisos, inicio">
+      <header className="vista3d-header pointer-events-none absolute inset-x-0 top-0 z-20 px-3 pt-3 md:px-6">
+        <div className="vista3d-header-inner pointer-events-auto mx-auto max-w-[1600px] rounded-2xl border border-white/20 bg-[#102c4d]/90 px-4 py-3 shadow-2xl shadow-blue-950/25 backdrop-blur-xl">
+          <Link to="/" className="vista3d-brand flex items-center gap-3" aria-label="UniAvisos, inicio">
             <img src="/logo.svg" alt="" className="h-9 w-9" />
             <span className="text-lg font-extrabold tracking-tight text-white">UniAvisos</span>
             <span className="rounded-lg border border-blue-200/25 bg-blue-400/20 px-2 py-1 text-xs font-semibold text-blue-100">Vista 3D</span>
           </Link>
 
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-            <input
-              type="search"
-              placeholder="Buscar…"
-              aria-label="Buscar anuncios"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              className={`${campo} w-36`}
-            />
-            <select
-              aria-label="Filtrar por categoría"
-              value={categoriaId}
-              onChange={(e) => setCategoriaId(e.target.value)}
-              className={campo}
-            >
-              <option value="" className="text-slate-900">
-                Todas las categorías
-              </option>
-              {categorias.map((c) => (
-                <option key={c.id} value={c.id} className="text-slate-900">
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
-            <select
-              aria-label="Filtrar por importancia"
-              value={importancia}
-              onChange={(e) => setImportancia(e.target.value)}
-              className={campo}
-            >
-              <option value="" className="text-slate-900">Toda importancia</option>
-              <option value="normal" className="text-slate-900">Normal</option>
-              <option value="importante" className="text-slate-900">Importante</option>
-              <option value="urgente" className="text-slate-900">Urgente</option>
-            </select>
-            <Link to="/tablero" className={enlace}>
-              Tablero
-            </Link>
-            <Link to="/lista" className={enlace}>
-              Lista
-            </Link>
-            <button
-              type="button"
-              onClick={alternar}
-              aria-label={tema === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
-              title={tema === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
-              className="rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:border-blue-200/60 hover:bg-blue-400/20"
-            >
-              {tema === "dark" ? "☀️ Claro" : "🌙 Oscuro"}
-            </button>
-            {puedePublicar && (
+          <div className="vista3d-header-controls">
+            <div className="vista3d-season-controls">
+              <span
+                className="vista3d-season-badge"
+                title={
+                  siguiente
+                    ? `Temporada ${ETIQUETAS_TEMPORADA[temporada]}${celebracion ? ` · ${celebracion.etiqueta}` : ""}. Próxima temporada: ${siguiente.fecha} a las ${siguiente.hora}.`
+                    : `Temporada ${ETIQUETAS_TEMPORADA[temporada]}${celebracion ? ` · ${celebracion.etiqueta}` : ""}`
+                }
+                aria-live="polite"
+              >
+                {`Temporada ${ETIQUETAS_TEMPORADA[temporada]}${celebracion ? ` · ${celebracion.etiqueta}` : ""}`}
+              </span>
               <button
                 type="button"
-                onClick={() => setPublicarAbierto(true)}
-                className="rounded-xl border border-blue-300/50 bg-gradient-to-r from-blue-600 to-blue-800 px-3 py-2 text-xs font-bold text-white shadow-lg shadow-blue-950/20 transition hover:from-blue-500 hover:to-blue-700"
+                onClick={() => setAnimacionTemporada((activa) => !activa)}
+                aria-pressed={animacionTemporada}
+                aria-label={animacionTemporada ? "Pausar animación de temporada" : "Activar animación de temporada"}
+                title={animacionTemporada ? "Pausar animación de temporada" : "Activar animación de temporada"}
+                className="vista3d-header-button"
               >
-                Publicar anuncio
+                <span aria-hidden="true">{animacionTemporada ? "❚❚" : "▶"}</span>
+                <span className="vista3d-button-label">Animación</span>
               </button>
-            )}
-            <AuthActions compacto />
+              <button
+                type="button"
+                onClick={alternar}
+                aria-label={tema === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
+                title={tema === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
+                className="vista3d-header-button"
+              >
+                <span aria-hidden="true">{tema === "dark" ? "☀️" : "🌙"}</span>
+                <span className="vista3d-button-label">{tema === "dark" ? "Claro" : "Oscuro"}</span>
+              </button>
+            </div>
+
+            <div className="vista3d-filters">
+              <input
+                type="search"
+                placeholder="Buscar…"
+                aria-label="Buscar anuncios"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                className={`${campo} vista3d-search`}
+              />
+              <select
+                aria-label="Filtrar por categoría"
+                value={categoriaId}
+                onChange={(e) => setCategoriaId(e.target.value)}
+                className={`${campo} vista3d-category`}
+              >
+                <option value="" className="text-slate-900">
+                  Todas las categorías
+                </option>
+                {categorias.map((c) => (
+                  <option key={c.id} value={c.id} className="text-slate-900">
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+              <select
+                aria-label="Filtrar por importancia"
+                value={importancia}
+                onChange={(e) => setImportancia(e.target.value)}
+                className={`${campo} vista3d-importance`}
+              >
+                <option value="" className="text-slate-900">Toda importancia</option>
+                <option value="normal" className="text-slate-900">Normal</option>
+                <option value="importante" className="text-slate-900">Importante</option>
+                <option value="urgente" className="text-slate-900">Urgente</option>
+              </select>
+            </div>
+
+            <nav className="vista3d-navigation" aria-label="Navegación principal">
+              <Link to="/tablero" className={`${enlace} vista3d-nav-link`}>
+                Tablero
+              </Link>
+              <Link to="/lista" className={`${enlace} vista3d-nav-link`}>
+                Lista
+              </Link>
+              {puedePublicar && (
+                <button
+                  type="button"
+                  onClick={() => setPublicarAbierto(true)}
+                  className={`${enlace} vista3d-publish`}
+                >
+                  Publicar anuncio
+                </button>
+              )}
+              <AuthActions compacto />
+            </nav>
           </div>
         </div>
       </header>
@@ -220,6 +256,9 @@ export default function Vista3D() {
               onAbrir={setSeleccionado}
               anuncioSeleccionado={seleccionado}
               tema={tema}
+              temporada={temporada}
+              celebracion={celebracion}
+              animacionTemporada={animacionTemporada}
             />
             {mensaje && (
               <p

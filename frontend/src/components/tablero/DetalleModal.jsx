@@ -115,12 +115,16 @@ export default function DetalleModal({
               </p>
             )}
 
-            {anuncio.resumen && <p className="mb-3 font-semibold">{anuncio.resumen}</p>}
+            {anuncio.resumen && (
+              <p className="mb-3 text-justify font-semibold leading-relaxed [text-wrap:pretty]">
+                {anuncio.resumen}
+              </p>
+            )}
             {anuncio.tipo !== "image" &&
               anuncio.contenido &&
               anuncio.contenido !== anuncio.titulo &&
               anuncio.contenido !== anuncio.resumen && (
-                <p className="whitespace-pre-wrap break-words leading-relaxed">
+                <p className="whitespace-pre-wrap break-words text-justify leading-7 [text-wrap:pretty]">
                   {anuncio.contenido}
                 </p>
               )}

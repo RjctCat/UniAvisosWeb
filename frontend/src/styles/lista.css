@@ -97,6 +97,8 @@
   display: -webkit-box;
   overflow: hidden;
   color: var(--text-muted);
+  text-align: justify;
+  hyphens: auto;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
 }
