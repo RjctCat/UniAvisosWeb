@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { dibujarTarjeta, TARJETA_ANCHO } from "./dibujarTarjeta";
-import { COLORES_TEMPORADA, SIMBOLOS_TEMPORADA } from "../../lib/temporada";
+import { SIMBOLOS_TEMPORADA } from "../../lib/temporada";
 
 const POR_PAGINA = 6;
 const TABLON_ANCHO = 15;
@@ -252,13 +252,18 @@ function CameraRig({ zoom, foco }) {
 
 function colorTemporada(temporada, celebracion) {
   const rgb = celebracion?.color?.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-  if (rgb) return new THREE.Color(`rgb(${rgb[1]}, ${rgb[2]}, ${rgb[3]})`);
+  if (rgb) {
+    const luminosidad = (Number(rgb[1]) + Number(rgb[2]) + Number(rgb[3])) / 3;
+    return new THREE.Color(luminosidad > 205 ? "#3b82f6" : `rgb(${rgb[1]}, ${rgb[2]}, ${rgb[3]})`);
+  }
 
-  const temporadaColor = COLORES_TEMPORADA[temporada];
-  const rgbTemporada = temporadaColor?.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-  return rgbTemporada
-    ? new THREE.Color(`rgb(${rgbTemporada[1]}, ${rgbTemporada[2]}, ${rgbTemporada[3]})`)
-    : new THREE.Color("#bfdbfe");
+  const colores = {
+    winter: "#60a5fa",
+    spring: "#ec4899",
+    summer: "#eab308",
+    autumn: "#c2410c",
+  };
+  return new THREE.Color(colores[temporada] || "#60a5fa");
 }
 
 function ParticulaEstacional({ datos, textura, color, animada }) {
@@ -269,6 +274,8 @@ function ParticulaEstacional({ datos, textura, color, animada }) {
     if (!particula || !animada) return;
     particula.position.y -= datos.velocidad * delta;
     if (particula.position.y < -3.2) particula.position.y = 3.2;
+    particula.rotation.x += datos.giroX * delta;
+    particula.rotation.y += datos.giroY * delta;
     particula.rotation.z += datos.giro * delta;
   });
 
@@ -277,14 +284,16 @@ function ParticulaEstacional({ datos, textura, color, animada }) {
       ref={referencia}
       position={[datos.x, datos.y, -0.08]}
       scale={datos.tamano}
-      rotation={[0, 0, datos.rotacion]}
+      rotation={[0.35, -0.25, datos.rotacion]}
     >
       <planeGeometry args={[1, 1]} />
       <meshBasicMaterial
         map={textura}
         color={color}
         transparent
-        opacity={0.68}
+        opacity={0.92}
+        alphaTest={0.06}
+        toneMapped={false}
         depthWrite={false}
         side={THREE.DoubleSide}
       />
@@ -296,18 +305,21 @@ function ParticulasTemporada({ temporada, celebracion, animada }) {
   const simbolo = celebracion?.simbolo || SIMBOLOS_TEMPORADA[temporada] || "✦";
   const textura = useMemo(() => {
     const lienzo = document.createElement("canvas");
-    lienzo.width = 128;
-    lienzo.height = 128;
+    lienzo.width = 256;
+    lienzo.height = 256;
     const contexto = lienzo.getContext("2d");
     if (contexto) {
-      contexto.font = "96px serif";
+      contexto.font = "bold 192px 'Segoe UI Symbol', 'Arial Unicode MS', serif";
       contexto.textAlign = "center";
       contexto.textBaseline = "middle";
       contexto.fillStyle = "#ffffff";
-      contexto.fillText(simbolo, 64, 68);
+      contexto.shadowColor = "rgba(255,255,255,0.65)";
+      contexto.shadowBlur = 12;
+      contexto.fillText(simbolo, 128, 132);
     }
     const mapa = new THREE.CanvasTexture(lienzo);
     mapa.colorSpace = THREE.SRGBColorSpace;
+    mapa.needsUpdate = true;
     return mapa;
   }, [simbolo]);
   const color = useMemo(
@@ -320,8 +332,10 @@ function ParticulasTemporada({ temporada, celebracion, animada }) {
         id: indice,
         x: -6.2 + ((indice * 37) % 124) / 10,
         y: -3 + ((indice * 53) % 60) / 10,
-        tamano: 0.13 + (indice % 4) * 0.045,
-        velocidad: 0.14 + (indice % 5) * 0.045,
+        tamano: 0.3 + (indice % 4) * 0.065,
+        velocidad: 0.32 + (indice % 5) * 0.12,
+        giroX: ((indice % 3) - 1) * 0.18,
+        giroY: ((indice % 4) - 1.5) * 0.14,
         giro: ((indice % 3) - 1) * 0.08,
         rotacion: (indice % 5) * 0.55,
       })),
