@@ -67,6 +67,15 @@ export default function Tablero() {
       .finally(() => setCargando(false));
   }, []);
 
+  useEffect(() => {
+    if (!filtrosAbiertos) return undefined;
+    const cerrarConEscape = (evento) => {
+      if (evento.key === "Escape") setFiltrosAbiertos(false);
+    };
+    window.addEventListener("keydown", cerrarConEscape);
+    return () => window.removeEventListener("keydown", cerrarConEscape);
+  }, [filtrosAbiertos]);
+
   // Las posiciones se calculan con TODOS los anuncios, así las notas
   // no cambian de lugar al filtrar.
   const posiciones = useMemo(() => acomodar(anuncios), [anuncios]);
@@ -124,14 +133,14 @@ export default function Tablero() {
         animada={animacionTemporada}
       />
 
-      <header className="app-header z-30 flex flex-wrap items-center justify-between border-b border-[var(--border-color)] px-4 py-2.5 shadow-md md:px-6">
+      <header className="app-header tablero-header z-30 flex flex-wrap items-center justify-between border-b border-[var(--border-color)] px-4 py-2.5 shadow-md md:px-6">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setFiltrosAbiertos(true)}
             className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-medium md:hidden"
           >
-            ☰ Filtros
+            ☰ Menú
           </button>
           <Link to="/" className="flex items-center gap-3" aria-label="UniAvisos, inicio">
             <img src="/logo.svg" alt="" className="h-10 w-10 flex-shrink-0" />
@@ -144,7 +153,7 @@ export default function Tablero() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="tablero-header-actions flex items-center gap-2 md:gap-3">
           <span
             className="max-w-[10rem] truncate rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 text-[10px] font-medium sm:max-w-[14rem] lg:max-w-[26rem] lg:px-3 lg:text-xs"
             title={
@@ -194,7 +203,15 @@ export default function Tablero() {
         </div>
       </header>
 
-      <div className="relative flex flex-1 overflow-hidden">
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        {filtrosAbiertos && (
+          <button
+            type="button"
+            className="mobile-menu-backdrop"
+            aria-label="Cerrar menú de opciones"
+            onClick={() => setFiltrosAbiertos(false)}
+          />
+        )}
         <Filtros
           filtros={filtros}
           onCambiar={cambiarFiltro}

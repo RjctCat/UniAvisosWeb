@@ -1,4 +1,4 @@
-import { NOTA_ANCHO, rotacionDe } from "../../lib/layout";
+import { NOTA_ANCHO } from "../../lib/layout";
 
 export default function Nota({ anuncio, posicion, onAbrir }) {
   const tipo = anuncio.tipo || "default";
@@ -34,7 +34,6 @@ export default function Nota({ anuncio, posicion, onAbrir }) {
         top: posicion.y,
         width: NOTA_ANCHO,
         zIndex: anuncio.z_index || 1,
-        transform: `rotate(${rotacionDe(anuncio)}deg)`,
       }}
     >
       <div className={`pin ${anuncio.pin || "pin-red"}`} />
@@ -50,7 +49,7 @@ export default function Nota({ anuncio, posicion, onAbrir }) {
             src={anuncio.imagen_url}
             alt={anuncio.titulo}
             loading="lazy"
-            className="mt-2 h-40 w-full rounded object-cover"
+            className="mt-2 max-h-52 w-full rounded object-contain"
           />
         ) : (
           <>
@@ -62,7 +61,7 @@ export default function Nota({ anuncio, posicion, onAbrir }) {
                 src={anuncio.imagen_url}
                 alt=""
                 loading="lazy"
-                className="mb-2 h-24 w-full rounded object-cover"
+                className="mb-2 max-h-32 w-full rounded object-contain"
               />
             )}
             {anuncio.archivo_url && (

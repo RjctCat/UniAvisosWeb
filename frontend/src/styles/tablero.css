@@ -31,7 +31,8 @@
 
 .tablero-page {
     height: 100vh;
-    width: 100vw;
+    height: 100dvh;
+    width: 100%;
     display: flex;
     flex-direction: column;
     font-family: 'Inter', sans-serif;
@@ -45,6 +46,31 @@
 .app-header {
     background: var(--bg-header);
     backdrop-filter: blur(12px);
+}
+
+.tablero-header-actions {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    touch-action: pan-x;
+}
+
+.tablero-header {
+    flex-shrink: 0;
+}
+
+.tablero-header-actions > * {
+    flex-shrink: 0;
+}
+
+.mobile-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    border: 0;
+    background: rgb(15 23 42 / 45%);
 }
 
 input, textarea, select {
@@ -107,6 +133,12 @@ input, textarea, select {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.4rem;
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 0.9rem;
+    background: rgb(15 23 42 / 88%);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 28%);
+    backdrop-filter: blur(8px);
 }
 
 .board-item {
@@ -116,7 +148,7 @@ input, textarea, select {
     -ms-overflow-style: none;
     transition: box-shadow 0.15s ease;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-    touch-action: pan-y;
+    touch-action: none;
 }
 
 .board-item::-webkit-scrollbar,
@@ -200,9 +232,37 @@ input, textarea, select {
 }
 
 @media (max-width: 640px) {
+    .tablero-header {
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .tablero-header-actions {
+        width: 100%;
+        flex-basis: 100%;
+        gap: 0.5rem;
+        padding-bottom: 0.2rem;
+    }
+
+    .tablero-header-actions::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .tablero-header-actions::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: var(--text-muted);
+    }
+
     .board-tools {
-        right: 0.5rem;
-        bottom: 0.5rem;
+        right: max(0.5rem, env(safe-area-inset-right));
+        bottom: max(0.5rem, env(safe-area-inset-bottom));
+        gap: 0.25rem;
+        padding: 0.3rem;
+    }
+
+    .board-tools button {
+        width: 2.75rem;
+        height: 2.75rem;
     }
 
 }

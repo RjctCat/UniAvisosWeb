@@ -4,9 +4,9 @@ export const ALTO_TABLERO = 2000;
 export const NOTA_ANCHO = 320;
 export const NOTA_ALTO = 310;
 
-const CELDA_ANCHO = 360;
-const CELDA_ALTO = 340;
-const MARGEN = 40;
+const CELDA_ANCHO = 340;
+const CELDA_ALTO = 320;
+const MARGEN = 24;
 
 function hash(texto) {
   let h = 0;

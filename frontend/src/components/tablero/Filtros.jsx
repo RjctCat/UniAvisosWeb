@@ -68,7 +68,7 @@ export default function Filtros({
 }) {
   return (
     <aside
-      aria-label="Filtros del tablero"
+      aria-label="Menú de opciones del tablero"
       className={`w-64 flex-col justify-between overflow-y-auto border-r border-[var(--border-color)] bg-[var(--bg-card)] p-4 shadow-xl ${
         abierto ? "fixed inset-y-0 left-0 z-[60] flex" : "hidden"
       } md:static md:z-20 md:flex`}
@@ -79,7 +79,7 @@ export default function Filtros({
           onClick={onCerrar}
           className="mb-4 w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-xs font-bold md:hidden"
         >
-          ✕ Cerrar filtros
+          ✕ Cerrar menú
         </button>
 
         <Grupo
@@ -90,7 +90,7 @@ export default function Filtros({
         />
 
         <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
-          Filtros
+          Búsqueda y preferencias
         </h2>
         <input
           type="search"
