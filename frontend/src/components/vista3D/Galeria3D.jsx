@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
-import { dibujarTarjeta } from "./dibujarTarjeta";
+import { dibujarTarjeta, TARJETA_ANCHO } from "./dibujarTarjeta";
 
 const POR_PAGINA = 6;
 const TABLON_ANCHO = 15;
@@ -250,7 +250,12 @@ function CameraRig({ zoom, foco }) {
 }
 
 function useTextura(anuncio, aspecto, onAspectoCarga) {
-  const lienzo = useMemo(() => document.createElement("canvas"), []);
+  const lienzo = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = TARJETA_ANCHO;
+    canvas.height = Math.round(TARJETA_ANCHO / aspecto);
+    return canvas;
+  }, [aspecto]);
   const texturaRef = useRef(null);
   const textura = useMemo(() => {
     const t = new THREE.CanvasTexture(lienzo);
@@ -282,10 +287,15 @@ function useTextura(anuncio, aspecto, onAspectoCarga) {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
+        if (cancelado) return;
         imagen = img;
         if (img.naturalWidth && img.naturalHeight) {
           onAspectoCarga(anuncio.id, img.naturalWidth / img.naturalHeight);
         }
+        pintar();
+      };
+      img.onerror = () => {
+        imagen = null;
         pintar();
       };
       img.src = anuncio.imagen_url;
@@ -317,7 +327,6 @@ function Tarjeta({
   const textura = useTextura(anuncio, aspecto, onAspectoCarga);
   const [encima, setEncima] = useState(false);
   const entrada = indice * 0.09;
-  const inclinacion = ((indice % 3) - 1) * 0.025;
   const { ancho, alto } = dimensiones;
 
   useEffect(() => {
@@ -346,7 +355,6 @@ function Tarjeta({
       delta
     );
     g.position.z = THREE.MathUtils.damp(g.position.z, encima ? 0.34 : 0.12, k, delta);
-    g.rotation.z = THREE.MathUtils.damp(g.rotation.z, inclinacion, k, delta);
     g.scale.setScalar(
       THREE.MathUtils.damp(g.scale.x, encima ? 1.12 : activa ? 1.02 : 1, k, delta)
     );
@@ -507,6 +515,7 @@ export default function Galeria3D({ anuncios, onAbrir, anuncioSeleccionado, tema
   }, [ajustarZoom, alAbrirTarjeta, indiceActivo, moverAnuncio, mosaico, visibles]);
 
   const inicioX = useRef(null);
+  const regionRef = useRef(null);
   const alPresionar = (evento) => {
     inicioX.current = evento.clientX;
   };
@@ -517,18 +526,28 @@ export default function Galeria3D({ anuncios, onAbrir, anuncioSeleccionado, tema
     if (Math.abs(dx) > 65) irAPagina(dx < 0 ? 1 : -1);
   };
 
+  useEffect(() => {
+    const region = regionRef.current;
+    if (!region) return undefined;
+
+    const alUsarRueda = (evento) => {
+      evento.preventDefault();
+      if (Math.abs(evento.deltaY) > 1) ajustarZoom(evento.deltaY < 0 ? 0.08 : -0.08);
+    };
+
+    region.addEventListener("wheel", alUsarRueda, { passive: false });
+    return () => region.removeEventListener("wheel", alUsarRueda);
+  }, [ajustarZoom]);
+
   return (
     <div
+      ref={regionRef}
       role="region"
       aria-label="Tablero universitario 3D de anuncios"
       tabIndex={0}
       onPointerDown={alPresionar}
       onPointerUp={alSoltar}
       onPointerCancel={() => (inicioX.current = null)}
-      onWheel={(evento) => {
-        evento.preventDefault();
-        if (Math.abs(evento.deltaY) > 1) ajustarZoom(evento.deltaY < 0 ? 0.08 : -0.08);
-      }}
       className={`relative h-full w-full touch-pan-y select-none overflow-hidden outline-none ${
         tema === "dark" ? "bg-[#0b1524]" : "bg-[#dcecff]"
       }`}
@@ -571,50 +590,39 @@ export default function Galeria3D({ anuncios, onAbrir, anuncioSeleccionado, tema
               : "border-white/60 bg-white/95 text-[#10233f]"
           }`}
         >
-          <div className="flex items-start gap-3">
-            {avisoEncima.anuncio.imagen_url && (
-              <img
-                src={avisoEncima.anuncio.imagen_url}
-                alt=""
-                className={`h-20 w-24 shrink-0 rounded-lg object-contain p-1 ${
-                  tema === "dark" ? "bg-[#23354d]" : "bg-blue-50"
-                }`}
-              />
-            )}
-            <div className="min-w-0">
-              <div className="mb-2 flex flex-wrap gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-                <span className={`rounded-full px-2 py-1 ${
-                  tema === "dark" ? "bg-blue-950 text-blue-200" : "bg-blue-100 text-blue-800"
-                }`}>
-                  {avisoEncima.anuncio.categoria?.nombre || "General"}
-                </span>
-                <span className={`rounded-full px-2 py-1 ${
-                  tema === "dark" ? "bg-slate-700 text-slate-200" : "bg-slate-100 text-slate-700"
-                }`}>
-                  {avisoEncima.anuncio.importancia || "normal"}
-                </span>
-              </div>
-              <h2 className="break-words text-base font-extrabold leading-snug sm:text-lg">
-                {avisoEncima.anuncio.titulo}
-              </h2>
-              {(avisoEncima.anuncio.resumen || avisoEncima.anuncio.contenido) && (
-                <p className={`mt-1 line-clamp-4 break-words text-sm leading-relaxed ${
-                  tema === "dark" ? "text-slate-300" : "text-slate-600"
-                }`}>
-                  {avisoEncima.anuncio.resumen}
-                  {avisoEncima.anuncio.resumen &&
-                    avisoEncima.anuncio.contenido !== avisoEncima.anuncio.resumen &&
-                    avisoEncima.anuncio.tipo !== "image" &&
-                    ` ${avisoEncima.anuncio.contenido || ""}`}
-                  {!avisoEncima.anuncio.resumen && avisoEncima.anuncio.contenido}
-                </p>
-              )}
-              <p className={`mt-2 text-[10px] font-semibold ${
-                tema === "dark" ? "text-blue-300" : "text-blue-700"
+          <div className="min-w-0">
+            <div className="mb-2 flex flex-wrap gap-1.5 text-[10px] font-bold uppercase tracking-wide">
+              <span className={`rounded-full px-2 py-1 ${
+                tema === "dark" ? "bg-blue-950 text-blue-200" : "bg-blue-100 text-blue-800"
               }`}>
-                Selecciona para abrir el anuncio completo
-              </p>
+                {avisoEncima.anuncio.categoria?.nombre || "General"}
+              </span>
+              <span className={`rounded-full px-2 py-1 ${
+                tema === "dark" ? "bg-slate-700 text-slate-200" : "bg-slate-100 text-slate-700"
+              }`}>
+                {avisoEncima.anuncio.importancia || "normal"}
+              </span>
             </div>
+            <h2 className="break-words text-base font-extrabold leading-snug sm:text-lg">
+              {avisoEncima.anuncio.titulo}
+            </h2>
+            {(avisoEncima.anuncio.resumen || avisoEncima.anuncio.contenido) && (
+              <p className={`mt-1 line-clamp-4 break-words text-sm leading-relaxed ${
+                tema === "dark" ? "text-slate-300" : "text-slate-600"
+              }`}>
+                {avisoEncima.anuncio.resumen}
+                {avisoEncima.anuncio.resumen &&
+                  avisoEncima.anuncio.contenido !== avisoEncima.anuncio.resumen &&
+                  avisoEncima.anuncio.tipo !== "image" &&
+                  ` ${avisoEncima.anuncio.contenido || ""}`}
+                {!avisoEncima.anuncio.resumen && avisoEncima.anuncio.contenido}
+              </p>
+            )}
+            <p className={`mt-2 text-[10px] font-semibold ${
+              tema === "dark" ? "text-blue-300" : "text-blue-700"
+            }`}>
+              Selecciona para abrir el anuncio completo
+            </p>
           </div>
         </aside>
       )}
