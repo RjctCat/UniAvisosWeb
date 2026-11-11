@@ -680,7 +680,7 @@ export default function Galeria3D({
         <ParticulasTemporada
           temporada={temporada}
           celebracion={celebracion}
-          animada={animacionTemporada && !reducirMovimiento}
+          animada={animacionTemporada}
         />
 
         {visibles.map((anuncio, indice) => (
