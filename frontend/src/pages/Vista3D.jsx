@@ -132,8 +132,8 @@ export default function Vista3D() {
       <header className="vista3d-header pointer-events-none absolute inset-x-0 top-0 z-20 px-3 pt-3 md:px-6">
         <div className="vista3d-header-inner pointer-events-auto mx-auto max-w-[1600px] rounded-2xl border border-white/20 bg-[#102c4d]/90 px-4 py-3 shadow-2xl shadow-blue-950/25 backdrop-blur-xl">
           <Link to="/" className="vista3d-brand flex items-center gap-3" aria-label="UniAvisos, inicio">
-            <img src="/logo.svg" alt="" className="h-9 w-9" />
-            <span className="text-lg font-extrabold tracking-tight text-white">UniAvisos</span>
+            <img src="/logo.svg" alt="" className="h-10 w-10 flex-shrink-0" />
+            <span className="text-xl font-extrabold tracking-tight text-white">UniAvisos</span>
             <span className="rounded-lg border border-blue-200/25 bg-blue-400/20 px-2 py-1 text-xs font-semibold text-blue-100">Vista 3D</span>
           </Link>
 

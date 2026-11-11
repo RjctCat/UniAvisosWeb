@@ -282,7 +282,8 @@ function ParticulaEstacional({ datos, textura, color, animada }) {
   return (
     <mesh
       ref={referencia}
-      position={[datos.x, datos.y, -0.08]}
+      raycast={() => null}
+      position={[datos.x, datos.y, 0.02]}
       scale={datos.tamano}
       rotation={[0.35, -0.25, datos.rotacion]}
     >
@@ -295,6 +296,7 @@ function ParticulaEstacional({ datos, textura, color, animada }) {
         alphaTest={0.06}
         toneMapped={false}
         depthWrite={false}
+        depthTest={false}
         side={THREE.DoubleSide}
       />
     </mesh>
@@ -677,12 +679,6 @@ export default function Galeria3D({
         <directionalLight position={[6, 2, 5]} intensity={0.65} color="#bfdbfe" />
         <TablonUniversitario tema={tema} />
         <CameraRig zoom={zoom} foco={foco} />
-        <ParticulasTemporada
-          temporada={temporada}
-          celebracion={celebracion}
-          animada={animacionTemporada}
-        />
-
         {visibles.map((anuncio, indice) => (
           <Tarjeta
             key={anuncio.id}
@@ -697,6 +693,11 @@ export default function Galeria3D({
             onAbrir={(anuncio, posicion) => alAbrirTarjeta(anuncio, posicion, indice)}
           />
         ))}
+        <ParticulasTemporada
+          temporada={temporada}
+          celebracion={celebracion}
+          animada={animacionTemporada}
+        />
       </Canvas>
 
       <p className="sr-only" aria-live="polite">
